@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.app.json",  // This ensures we don't have to duplicate all the settings
+    "compilerOptions": {
+      "jsx": "react-jsx",  // Make sure JSX is supported
+      "module": "CommonJS",  // Jest prefers CommonJS for module resolution
+      "esModuleInterop": true
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "src/**/*.test.tsx"  // Include your test files here
+    ]
+  }
+  
