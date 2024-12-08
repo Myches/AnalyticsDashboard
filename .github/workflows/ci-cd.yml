@@ -1,0 +1,59 @@
+name: CI/CD Pipeline for Analytics Dashboard
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  
+
+    steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+  
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'  
+
+    
+    - name: Install dependencies
+      run: npm install
+
+    
+    - name: Run tests
+      run: npm test -- --ci --watchAll=false
+
+    
+    - name: Build app
+      run: npm run build
+
+  deploy:
+    runs-on: ubuntu-latest  # Use Ubuntu runner for deployment
+
+    needs: build  # This ensures the build job runs first
+
+    steps:
+    # Step 1: Checkout code (again, needed for deployment)
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Deploy to Netlify using the official GitHub Action
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v1
+      with:
+        publish-dir: ./build  # Specify the directory where your build files are located
+        production-branch: main  # Specify the production branch
+        github-token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token to authenticate deployment
+
+    # Add Netlify credentials
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}  # Ensure your Netlify token is stored in GitHub Secrets
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}  # Ensure your Netlify site ID is stored in GitHub Secrets
